@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><style>body { font: 14px Arial; background: #fff5dd; padding: 8px; }</style></head>
+<body>
+    Tracker 1 saw <b>{{ publisher }}</b> / {{ page }}<br>
+    ID: {{ tracker_id }} {% if new_id %}(new){% else %}(recognized){% endif %}<br>
+    <a href="/sync-now" target="_blank">optional: sync with Tracker Two</a>
+</body>
+</html>

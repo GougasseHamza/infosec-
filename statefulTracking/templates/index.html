@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alice's Web Journey</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 760px; margin: 50px auto; line-height: 1.5; }
+        code { background: #eee; padding: 3px 6px; }
+        a { margin-right: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Alice's Web Journey</h1>
+    <p>Identifier: <code>{{ aid }}</code></p>
+    <p>{% if is_new %}A new cookie was created.{% else %}The server recognized this browser.{% endif %}</p>
+    <p>
+        Test:
+        <a href="/?mode=session">session</a>
+        <a href="/?mode=persistent">persistent</a>
+        <a href="/?mode=secure">Secure</a>
+        <a href="/?mode=httponly">HttpOnly</a>
+        <a href="/?mode=strict">SameSite Strict</a>
+    </p>
+</body>
+</html>
+

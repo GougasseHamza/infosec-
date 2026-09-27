@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Tracker One Profile</title>
+    <style>body { font-family: Arial; max-width: 950px; margin: 35px auto; } table { border-collapse: collapse; width: 100%; } td,th { border:1px solid #aaa; padding:8px; text-align:left; }</style>
+</head>
+<body>
+    <h1>Tracker One: reconstructed profile</h1>
+    <p>The rows are stored in chronological order.</p>
+    <table>
+        <tr><th>Time</th><th>Identifier</th><th>Publisher</th><th>Page</th><th>Cookie header received</th></tr>
+        {% for v in visits %}
+        <tr><td>{{ v.time }}</td><td>{{ v.tracker_id }}</td><td>{{ v.publisher }}</td><td>{{ v.page }}</td><td>{{ v.cookie_header }}</td></tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+
