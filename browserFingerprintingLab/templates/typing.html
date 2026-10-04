@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alice’s typing experiment</title>
+  <style>
+    body{font:18px/1.5 system-ui,sans-serif;max-width:860px;margin:70px auto;padding:0 28px;color:#20242a}
+    h1{font-size:30px;margin-bottom:12px} .target{font-size:20px;font-weight:600;background:#f2f4f7;padding:18px;border-radius:8px}
+    label{display:block;margin:24px 0 8px} input{width:100%;box-sizing:border-box;padding:14px;font-size:18px;border:1px solid #777;border-radius:5px}
+    button{margin-top:12px;padding:10px 15px;font-size:16px} .result{white-space:pre-line;margin-top:20px;padding:14px;background:#f2f4f7;border-radius:6px;min-height:28px}
+  </style>
+</head>
+<body>
+  <h1>Alice’s typing experiment</h1>
+  <p>Type the sentence below exactly. The timer starts with your first character.</p>
+  <p id="target-sentence" class="target">Cookies are gone, but Alice’s rhythm still leaves traces!</p>
+  <label for="typing-input">Your answer</label>
+  <input id="typing-input" type="text" autocomplete="off" spellcheck="false" autofocus>
+  <br><button id="restart" type="button">Restart experiment</button>
+  <div id="typing-results" class="result" aria-live="polite">Results will appear here when the sentence matches.</div>
+  <script src="{{ url_for('static', filename='fingerprint2.js', v=2) }}"></script>
+</body>
+</html>

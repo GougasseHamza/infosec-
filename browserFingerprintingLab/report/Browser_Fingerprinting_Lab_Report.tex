@@ -1,0 +1,84 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{xcolor}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\captionsetup{font=small,skip=4pt}
+\hypersetup{colorlinks=true,urlcolor=blue!55!black}
+\newcommand{\shot}[3]{\begin{center}\includegraphics[width=\linewidth,height=#1,keepaspectratio]{#2}\par\vspace{4pt}\captionof{figure}{#3}\end{center}}
+\newcommand{\code}[1]{\texttt{#1}}
+\begin{document}
+\begin{center}
+{\LARGE\textbf{Browser Fingerprinting Lab Report}}\\[3pt]
+M235 Information Security \quad | \quad UM6P \quad | \quad 4 October 2026
+\end{center}
+\textbf{Aim.} I tested what a website can learn about a browser without storing a cookie. I compared Safari normal mode, Safari Private Browsing, and Chrome Incognito. The lab server ran locally with Flask at \code{127.0.0.1:8000}.
+\section*{1. Passive fingerprinting}
+Passive clues arrive with the HTTP request. \code{User-Agent} can show the stated browser and operating system, \code{Accept-Language} preferred languages, and \code{Accept} and \code{Accept-Encoding} supported formats. \code{Referer} may show the previous page; \code{Sec-Fetch} headers describe request context.
+\begin{center}\small
+\begin{tabular}{>{\ttfamily}p{0.29\linewidth} p{0.28\linewidth} p{0.33\linewidth}}
+\toprule Header & What it can show & Safari normal \\
+\midrule
+User-Agent & Browser, engine, OS & Safari 18.3, Mac OS X \\
+Accept-Language & Language preference & en-GB, en-US, en \\
+Accept / Accept-Encoding & Formats and compression & HTML, XML; gzip, deflate \\
+Sec-Fetch-Site / Mode / Dest & Request context & none / navigate / document \\
+Referer / Cookie & Previous page / stored state & Not sent on direct visit \\
+\bottomrule
+\end{tabular}
+\end{center}
+The observed header combination can help distinguish browser setups. Fetch metadata mostly describes the request rather than a person. No Cookie header was sent on these direct visits. Safari Private Browsing kept the listed passive values unchanged; Chrome reported a different user agent and language list.
+\shot{60mm}{figures/request_headers.png}{HTTP request headers shown by the lab.}
+\section*{2. Active feature collection}
+The page read browser and screen properties with JavaScript, displayed them, and sent the values to Flask. Processor count, screen size, language, memory and time zone may help distinguish environments. Some values can be unavailable or adjusted by privacy settings.
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule Feature & Safari normal & Safari private & Chrome Incognito \\
+\midrule
+Language & en-GB & en-GB & fr-FR \\
+Screen size & 1512 $\times$ 982 & 1324 $\times$ 807 & 1512 $\times$ 982 \\
+Colour depth & 24 & 24 & 30 \\
+Logical processors & 8 & 8 & 14 \\
+Memory & unavailable & unavailable & 16 \\
+Pixel ratio & 2 & 2 & 2 \\
+Time zone & Africa/Casablanca & Africa/Casablanca & Africa/Casablanca \\
+\bottomrule
+\end{tabular}
+\end{center}
+Safari Private Browsing reported a viewport-sized screen value, while language, processor count and time zone remained the same. Chrome exposed different browser and language values. Private browsing changed some exposed data but did not remove all browser clues.
+\shot{44mm}{figures/safari_normal.png}{Active feature values in Safari normal mode.}
+\shot{44mm}{figures/safari_private.png}{Active feature values in Safari Private Browsing.}
+\shot{44mm}{figures/chrome_incognito.png}{Active feature values in Chrome Incognito.}
+\section*{3. Typing behaviour}
+\textbf{1. Speed formula.} Elapsed time is measured in seconds. For a sentence of $N$ characters typed in $t$ seconds, characters per minute (CPM) is $N\times60/t$. The conventional words-per-minute estimate is CPM divided by 5.
+\[
+ t=\frac{\text{finish}-\text{start}}{1000},\qquad
+ \mathrm{CPM}=\frac{N\times60}{t},\qquad
+ \mathrm{WPM}=\frac{\mathrm{CPM}}{5}.
+\]
+\textbf{2. JavaScript reference used.} I used the handout's items for selecting page elements, handling key and input events, timing with \code{performance.now()}, displaying results, and sending JSON with \code{fetch()}.
+\textbf{3. Algorithm.} Wait for the first character and record \code{performance.now()}; count each Backspace correction; after each input change compare the text with the target; once it matches, stop timing, calculate the speeds, display the values and send them to Flask.
+\textbf{4. Implementation.} The required file is \code{static/fingerprint2.js}. It listens for \code{keydown} to start the timer and count Backspace, then \code{input} to test for completion. It displays the results and includes a Restart button to clear the sample. Straight and curly apostrophes are treated as equivalent so keyboard punctuation does not block completion.
+\textbf{5. Request sent.} On completion the page posts JSON to \code{/collect}: \code{typing\_time}, \code{typing\_speed\_cpm}, \code{typing\_speed\_wpm}, and \code{correction\_count} (with the task name and character count). The page showed HTTP 200.
+\textbf{6. Verification and sample output.} The Flask console logged a \code{POST /collect} with 57 characters, 20.882 seconds, 163.777 CPM, 32.755 WPM and 18 corrections, followed by HTTP 200. The browser result and server log agree. The displayed values are rounded to two decimals.
+\begin{center}\small
+\begin{tabular}{lr}
+\toprule Typing time & 20.88 s \\
+Typing speed & 163.78 characters/min (32.76 words/min) \\
+Backspace corrections & 18 \\
+Flask response & HTTP 200 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\shot{31mm}{figures/typing_results_crop.png}{Completed typing test: result displayed on the page after Flask accepted the request.}
+\textit{This is one person's single run; typing speed and corrections vary between attempts, so one sample is not enough to identify someone.}
+\section*{Conclusion}
+A site can collect browser clues through request headers and JavaScript even when cookies are absent. Private browsing changed some exposed features but left others available. Typing timing adds another behavioural signal, though a single sample is not proof of identity.
+\end{document}

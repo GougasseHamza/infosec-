@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser Fingerprinting Lab</title>
+  <style>
+    body{font:16px/1.45 system-ui,sans-serif;max-width:980px;margin:32px auto;padding:0 24px;color:#20242a}
+    h1{margin-bottom:4px} h2{margin-top:32px} .muted{color:#59636b} table{border-collapse:collapse;width:100%;margin:12px 0 20px} th,td{text-align:left;padding:8px;border-bottom:1px solid #d7dce0;vertical-align:top;overflow-wrap:anywhere} th{width:31%} input[type=text]{width:100%;box-sizing:border-box;padding:12px;font-size:17px} button{padding:9px 14px;margin:10px 8px 10px 0;font-size:15px} pre,.result{white-space:pre-wrap;background:#f2f4f7;padding:12px;min-height:22px}
+  </style>
+</head>
+<body>
+  <h1>Browser Fingerprinting Lab</h1>
+  <p class="muted">Local privacy experiment. This page displays browser features and sends the selected test data only to the local Flask server.</p>
+  <h2>1 Passive HTTP features</h2>
+  <p>Request headers are collected by Flask before this page runs JavaScript.</p>
+  <table><tbody>
+    <tr><th>IP address</th><td>127.0.0.1 (local server)</td></tr>
+    <tr><th>HTTP method</th><td>GET</td></tr>
+    {% for label, value in headers %}<tr><th>{{ label }}</th><td>{{ value }}</td></tr>{% endfor %}
+  </tbody></table>
+
+  <h2>2 Active browser features</h2>
+  <p>JavaScript reads browser properties and posts them to Flask.</p>
+  <table id="feature-table"><tbody></tbody></table>
+  <button id="send-features" type="button">Send active features to Flask</button>
+  <p id="feature-status" class="result">Waiting for JavaScript…</p>
+
+  <h2 id="typing">3 Alice’s typing experiment</h2>
+  <p id="target-sentence">Cookies are gone, but Alice’s rhythm still leaves traces!</p>
+  <label for="typing-input">Type the target sentence:</label>
+  <input id="typing-input" type="text" autocomplete="off" spellcheck="false">
+  <button id="restart" type="button">Restart experiment</button>
+  <div id="typing-results" class="result" aria-live="polite"></div>
+
+  <h2>4 Optional SHA-256 fingerprint</h2>
+  <p>Hash selected active features in a fixed order. Typing and window size are excluded.</p>
+  <button id="hash-button" type="button">Generate and send hash only</button>
+  <pre id="hash-result"></pre>
+  <p id="hash-status" class="result"></p>
+
+  <script src="{{ url_for('static', filename='fingerprint.js') }}"></script>
+  <script src="{{ url_for('static', filename='fingerprint2.js') }}"></script>
+</body>
+</html>
